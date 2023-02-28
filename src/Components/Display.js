@@ -136,6 +136,10 @@ const Display = () => {
                 </div>
             </div>
         </div>
+        <div className='footer'>
+            <span><a className='footer-link' href="https://hl7-definition.caristix.com/v2/HL7v2.3/Segments">HL7 Documentation</a></span>
+            <span><a className='footer-link' href="https://github.com/Pragati-Khurana/hl7-parser">GitHub</a></span>
+        </div>
     </>
     
   )
