@@ -1,0 +1,1 @@
+This application is used to convert HL7 text to JSON text.
