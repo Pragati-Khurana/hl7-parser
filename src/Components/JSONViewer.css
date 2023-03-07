@@ -1,0 +1,6 @@
+.scroll_con::-webkit-scrollbar {
+    width: 5px;
+  }
+  .scroll_con::-webkit-scrollbar-thumb {
+    background-color: rgba(4, 2, 2, 0.587);
+  }

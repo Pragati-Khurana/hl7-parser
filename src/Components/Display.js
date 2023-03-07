@@ -1,16 +1,68 @@
 import React from 'react';
 import hl7 from '../hl7.json';
 import JSONViewer from './JSONViewer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Display.css';
+import Form from 'react-bootstrap/Form';
+import { useDebouncedCallback } from 'use-debounce';
+import './JSONViewer.css'
 
 const Display = () => {
+
+    let [isChecked, setIsChecked] = useState(false);
     let JSONText = {};
     let eachMsgSeg = {};
     let [JText, setJText] = useState({});
     let nArrayMsgSeg = [];
     let arrayMsgSeg = [];
     let arrayMsgSegValues = [];
+    let [parseJSONText, setParseJSONText] = useState({});
+    let myObj2;
+    let [myObj3, setMyObj3] = useState({});
+    let [search, setSearch] = useState("");
+    
+    const debounced = useDebouncedCallback((value) => {
+        setSearch(value);
+    }, 600);
+
+    const handleCheck = () => {
+        setIsChecked(!isChecked);
+    }
+
+    useEffect(() => {
+        if(isChecked)
+            setJText(myObj3);
+        else
+            setJText(parseJSONText);
+      }, [isChecked])
+
+    const removeEmptyOrNull = (obj) => {
+        Object.keys(obj).forEach(k =>
+          ((obj[k] && typeof obj[k] === 'object') && removeEmptyOrNull(obj[k])) ||
+          ((!obj[k]) && delete obj[k])
+        );
+        return obj;
+      };
+
+      const removeEmptyObj = (obj) => {
+          Object.keys(obj).forEach(k => {
+            if(Array.isArray(obj[k])) {
+                for(let x=0;x<obj[k].length;x++) {
+                    Object.keys(obj[k][x]).forEach(l => 
+                        (Object.keys(obj[k][x][l]).length === 0 && obj[k][x][l].constructor === Object) && delete obj[k][x][l]  
+                    )
+                }
+            }
+            else {
+                Object.keys(obj[k]).forEach(l =>
+                    (Object.keys(obj[k][l]).length === 0 && obj[k][l].constructor === Object) && delete obj[k][l]
+                )
+            }
+          }
+          );
+
+        return obj;
+      }
 
     //function called on parseMessage button
     function parseMessage() {
@@ -114,9 +166,17 @@ const Display = () => {
         JSONText = `${JSONText}\n}`
         let reg = /\\/g
         JSONText = JSONText.replace(reg,"\\\\");
-        
-        setJText(JSON.parse(JSONText));
 
+        setParseJSONText(JSON.parse(JSONText));
+
+        myObj2 = removeEmptyOrNull(JSON.parse(JSONText));
+        let tempObj = removeEmptyObj(myObj2);
+        setMyObj3(tempObj);
+
+        if(isChecked)
+            setJText(tempObj);
+        else
+            setJText(JSON.parse(JSONText));
     }
 
   return (
@@ -127,17 +187,26 @@ const Display = () => {
         <div className='flex-container'>
             <div className="div1">
                 <label className="form-label">HL7 Text</label>
-                <textarea className="form-control textArea1" id="msg" onChange={parseMessage}></textarea>
+                <textarea className="form-control textArea1 scroll_con" id="msg" onChange={parseMessage}></textarea>
             </div>
             <div className="div2">
-                <label className="form-label">JSON Text</label>
-                <div className="jviewer">
-                    <JSONViewer JText={JText} displayDataTypes={false} theme={"summerfruit:inverted"} collapsed={2} />
+                <div className='jviewer-label'>
+                    <label className="form-label">JSON Text</label>
+                    
+                  <div className='search-toggle-div'> 
+                        <Form.Check type="switch" checked={isChecked} onChange={handleCheck} label="Remove empty values" /> 
+
+                        <Form.Control type="text" placeholder="Search" className='search-box' onChange={(e) => debounced(e.target.value)} />
+                     </div> 
+                </div>
+
+                <div className="jviewer scroll_con">
+                    <JSONViewer highlightSearch={search} highlightSearchColor="#FFFD54" highlightCurrentSearchColor="#FE9B4A" JText={JText} displayDataTypes={false} theme={"summerfruit:inverted"} collapsed={2} />
                 </div>
             </div>
         </div>
         <div className='footer'>
-            <span><a className='footer-link' href="https://hl7-definition.caristix.com/v2/HL7v2.3/Segments">HL7 Documentation</a></span>
+            <span><a className='footer-link' href="https://hl7-definition.caristix.com/v2/HL7v2.3/Segments">HL7 Documentation (v2.3)</a></span>
             <span><a className='footer-link' href="https://github.com/Pragati-Khurana/hl7-parser">GitHub</a></span>
         </div>
     </>

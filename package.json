@@ -12,6 +12,8 @@
     "react-dom": "^18.2.0",
     "react-json-view": "^1.21.3",
     "react-scripts": "5.0.1",
+    "searchable-react-json-view": "0.0.8",
+    "use-debounce": "^9.0.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
