@@ -201,7 +201,7 @@ const Display = () => {
                 </div>
 
                 <div className="jviewer scroll_con">
-                    <JSONViewer highlightSearch={search} highlightSearchColor="#FFFD54" highlightCurrentSearchColor="#FE9B4A" JText={JText} displayDataTypes={false} theme={"summerfruit:inverted"} collapsed={2} />
+                    <JSONViewer highlightSearch={search} highlightSearchColor="#FFFD54" JText={JText} displayDataTypes={false} theme={"summerfruit:inverted"} collapsed={2} />
                 </div>
             </div>
         </div>
